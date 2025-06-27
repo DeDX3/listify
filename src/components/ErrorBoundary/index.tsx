@@ -1,6 +1,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, RefreshCw } from "lucide-react";
+import { errorHandler } from "@/utils/errorHandler";
 
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -25,9 +26,8 @@ export class ErrorBoundary extends React.Component<
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    // In production, you would log this to an error reporting service
-    // Example: Sentry.captureException(error, { extra: errorInfo });
+  componentDidCatch(error: Error) {
+    errorHandler.logError(error, "ErrorBoundary");
   }
 
   resetError = () => {
