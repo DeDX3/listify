@@ -6,7 +6,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Form,
@@ -34,21 +33,16 @@ type EditPlaylistForm = z.infer<typeof editPlaylistSchema>;
 interface EditPlaylistDialogProps {
   playlist?: Playlist | null;
   onPlaylistUpdate?: (data: EditPlaylistForm) => void;
-  trigger?: React.ReactNode;
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
 export const EditPlaylistDialog = ({
   playlist,
   onPlaylistUpdate,
-  trigger,
   open,
   onOpenChange,
 }: EditPlaylistDialogProps) => {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const isControlled = open !== undefined;
-
   const form = useForm<EditPlaylistForm>({
     resolver: zodResolver(editPlaylistSchema),
     defaultValues: {
@@ -59,34 +53,17 @@ export const EditPlaylistDialog = ({
 
   // Update form when playlist changes
   useEffect(() => {
-    if (playlist) {
+    if (playlist && open) {
       form.reset({
         name: playlist.name,
         description: playlist.description || "",
       });
     }
-  }, [playlist, form]);
-
-  // Auto-open when playlist is provided
-  useEffect(() => {
-    if (playlist && !isControlled) {
-      setIsDialogOpen(true);
-    }
-  }, [playlist, isControlled]);
-
-  const handleOpenChange = (newOpen: boolean) => {
-    if (isControlled) {
-      onOpenChange?.(newOpen);
-    } else {
-      setIsDialogOpen(newOpen);
-    }
-  };
-
-  const currentOpen = isControlled ? open : isDialogOpen;
+  }, [playlist, open, form]);
 
   const onSubmit = (data: EditPlaylistForm) => {
     onPlaylistUpdate?.(data);
-    handleOpenChange(false);
+    onOpenChange(false);
   };
 
   const handleCancel = () => {
@@ -96,16 +73,13 @@ export const EditPlaylistDialog = ({
         description: playlist.description || "",
       });
     }
-    handleOpenChange(false);
+    onOpenChange(false);
   };
 
   if (!playlist) return null;
 
   return (
-    <Dialog open={currentOpen} onOpenChange={handleOpenChange}>
-      {!isControlled && trigger && (
-        <DialogTrigger asChild>{trigger}</DialogTrigger>
-      )}
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-lg sm:text-xl">

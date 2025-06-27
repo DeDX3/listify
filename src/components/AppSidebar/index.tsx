@@ -35,6 +35,7 @@ export const AppSidebar = () => {
   const [editingPlaylistId, setEditingPlaylistId] = useState<string | null>(
     null
   );
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const { logout: logoutSpotify } = useSpotifyAuth();
 
   const handlePlaylistCreate = async (data: {
@@ -73,6 +74,7 @@ export const AppSidebar = () => {
 
       toast.success("Playlist updated successfully");
       setEditingPlaylistId(null);
+      setIsEditDialogOpen(false);
     } catch (error) {
       errorHandler.logError(error as Error, "PlaylistUpdate");
       toast.error((error as any).data?.message || "Failed to update playlist");
@@ -106,6 +108,16 @@ export const AppSidebar = () => {
     navigate(`/dashboard/playlist/${playlist._id}`);
   };
 
+  const handleEditPlaylist = (playlistId: string) => {
+    setEditingPlaylistId(playlistId);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleEditDialogClose = () => {
+    setIsEditDialogOpen(false);
+    setEditingPlaylistId(null);
+  };
+
   const playlists = playlistsData?.data || [];
 
   return (
@@ -120,7 +132,7 @@ export const AppSidebar = () => {
             error={error}
             activePlaylist={activePlaylist}
             onPlaylistClick={handlePlaylistClick}
-            onEditPlaylist={setEditingPlaylistId}
+            onEditPlaylist={handleEditPlaylist}
             onDeletePlaylist={handleDeletePlaylist}
           />
         </SidebarContent>
@@ -135,6 +147,8 @@ export const AppSidebar = () => {
             : null
         }
         onPlaylistUpdate={handlePlaylistUpdate}
+        open={isEditDialogOpen}
+        onOpenChange={handleEditDialogClose}
       />
     </>
   );

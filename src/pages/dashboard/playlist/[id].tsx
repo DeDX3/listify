@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import {
   useAddSongToPlaylistMutation,
@@ -46,11 +46,13 @@ export const PlaylistDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
+  const [deletingSongId, setDeletingSongId] = useState<string | null>(null);
   const activePlaylist = useSelector(
     (state: RootState) => state.playlist.activePlaylist
   );
   const [addSongToPlaylist] = useAddSongToPlaylistMutation();
-  const [deleteSongFromPlaylist] = useDeleteSongFromPlaylistMutation();
+  const [deleteSongFromPlaylist, { isLoading: isDeletingSong }] =
+    useDeleteSongFromPlaylistMutation();
 
   const { data: playlistData, isLoading: playlistLoading } =
     useGetPlaylistByIdQuery({ playlistId: id! }, { skip: !id });
@@ -93,6 +95,7 @@ export const PlaylistDetail = () => {
   const handleDeleteSong = async (songId: string) => {
     if (!id) return;
 
+    setDeletingSongId(songId);
     try {
       await deleteSongFromPlaylist({
         playlistId: id,
@@ -106,6 +109,7 @@ export const PlaylistDetail = () => {
         (error as any).data?.message || "Failed to remove song from playlist"
       );
     }
+    setDeletingSongId(null);
   };
 
   const songs = playlistData?.data?.songs || [];
@@ -144,6 +148,8 @@ export const PlaylistDetail = () => {
             songs={songs as unknown as Song[]}
             isLoading={playlistLoading}
             onDeleteSong={handleDeleteSong}
+            deletingSongId={deletingSongId}
+            isDeletingSong={isDeletingSong}
           />
         </div>
       </div>

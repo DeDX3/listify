@@ -42,7 +42,7 @@ export const SpotifyCallback = () => {
     <div className="flex items-center justify-center h-screen w-full">
       <div className="text-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500 mx-auto mb-4"></div>
-        <h2 className="text-xl font-semibold">Connecting to Spotify...</h2>
+        <h2 className="text-xl font-semibold">Taking you back to Listify...</h2>
       </div>
     </div>
   );

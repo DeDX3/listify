@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
+import { Trash2, Loader2 } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -15,6 +15,8 @@ interface SongsTableProps {
   songs: Song[];
   isLoading: boolean;
   onDeleteSong: (songId: string) => void;
+  deletingSongId?: string | null;
+  isDeletingSong?: boolean;
 }
 
 const formatDuration = (seconds: number) => {
@@ -27,6 +29,8 @@ export const SongsTable = ({
   songs,
   isLoading,
   onDeleteSong,
+  deletingSongId,
+  isDeletingSong,
 }: SongsTableProps) => {
   if (isLoading) {
     return (
@@ -101,9 +105,14 @@ export const SongsTable = ({
                   size="sm"
                   variant="ghost"
                   onClick={() => onDeleteSong(song._id)}
+                  disabled={isDeletingSong && deletingSongId === song._id}
                   className="text-destructive hover:text-destructive hover:bg-destructive/10"
                 >
-                  <Trash2 className="h-4 w-4" />
+                  {isDeletingSong && deletingSongId === song._id ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Trash2 className="h-4 w-4" />
+                  )}
                 </Button>
               </TableCell>
             </TableRow>
